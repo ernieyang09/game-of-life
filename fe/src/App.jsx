@@ -1,6 +1,9 @@
 import useWebSocket from "react-use-websocket";
 import Board from "./components/Board";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
+import Pattern from "./components/Pattern";
+
+import patterns from "./patterns.json";
 
 const WS_URL = "ws://localhost:8080"; // Change to your backend WebSocket URL
 
@@ -9,37 +12,49 @@ function App() {
     shouldReconnect: () => true, // Auto-reconnect on disconnect
   });
 
+  // refactor
   const board = useMemo(() => {
     const cleanBoard = [...Array(50)].map(() =>
       [...Array(50)].map(() => undefined)
     );
     if (lastMessage) {
       try {
-        console.log(lastMessage);
         const payload = JSON.parse(lastMessage?.data);
         payload.forEach(([x, y, color]) => {
           cleanBoard[x][y] = color;
         });
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     }
     return cleanBoard;
   }, [lastMessage]);
 
-  const onCoordClick = ({ x, y }) => {
-    console.log(x, y);
+  const onCoordClick = (coords) => {
     sendMessage(
       JSON.stringify({
         action: "update",
-        payload: [[x, y, "#000"]],
+        payload: coords,
       })
     );
+  };
+
+  const clean = () => {
+    sendMessage(JSON.stringify({ action: "clean" }));
   };
 
   return (
     <div>
       <Board board={board} onCoordClick={onCoordClick} />
+      <button onClick={clean}>clean</button>
+      <div>
+        <div>Pattern</div>
+        <div className="pattern-wrap">
+          {patterns.map((pattern, index) => (
+            <Pattern key={index} {...pattern} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

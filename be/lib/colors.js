@@ -1,4 +1,4 @@
-export const hexToRgb(hex) {
+function hexToRgb(hex) {
   hex = hex.replace(/^#/, ""); // Remove "#" if present
   if (hex.length === 3) {
     hex = hex
@@ -10,11 +10,11 @@ export const hexToRgb(hex) {
   return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
 }
 
-export const rgbToHex([r, g, b]) {
+function rgbToHex([r, g, b]) {
   return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
 }
 
-export const averageColor(colors) {
+function averageColor(colors) {
   const rgbColors = colors.map((color) =>
     typeof color === "string" ? hexToRgb(color) : color
   );
@@ -32,3 +32,15 @@ export const averageColor(colors) {
 
   return rgbToHex(avg.map((v) => Math.round(v / total)));
 }
+
+function randomColor() {
+  // Generate a random hex color
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+module.exports = { hexToRgb, rgbToHex, averageColor, randomColor };

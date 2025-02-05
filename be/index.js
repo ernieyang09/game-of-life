@@ -1,6 +1,7 @@
 const WebSocket = require("ws");
 const { ConWay } = require("./service/conway");
 const wss = new WebSocket.Server({ port: 8080 });
+const { randomColor } = require("./lib/colors");
 
 const game = new ConWay();
 
@@ -24,11 +25,19 @@ function broadcastGrid() {
 
 // WebSocket connection logic
 wss.on("connection", (ws) => {
+  // Let's assume 2 clients won't collide on the same color
+  const color = randomColor();
+
   let interval;
   console.log("Client connected");
 
   // Send the initial grid to the client
   console.log(JSON.stringify(formatLives()));
+  ws.send(
+    JSON.stringify({
+      color,
+    })
+  );
   ws.send(JSON.stringify(formatLives()));
 
   // Start the Game of Life loop
@@ -47,7 +56,7 @@ wss.on("connection", (ws) => {
       }
 
       if (data.action === "update") {
-        game.updateBoard(data.payload);
+        game.updateBoard(data.payload, color);
         broadcastGrid();
       }
     } catch (e) {

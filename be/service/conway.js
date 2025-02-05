@@ -16,10 +16,10 @@ class ConWay {
     this.lives = {};
   }
 
-  updateBoard(coordniates) {
-    coordniates.forEach(([x, y, value]) => {
-      this.board[x][y] = value;
-      this.lives[`${x},${y}`] = value;
+  updateBoard(coordniates, color) {
+    coordniates.forEach(([x, y]) => {
+      this.board[x][y] = color;
+      this.lives[`${x},${y}`] = color;
     });
   }
 

@@ -1,17 +1,22 @@
-.board {
-  background-color: black;
+.pattern {
   display: grid;
-  grid-template-columns: repeat(32, 1fr);
-  grid-template-rows: repeat(32, 1fr);
   gap: 1px;
   padding: 1px;
-  width: 351px;
+  cursor: pointer;
+}
+
+.pattern-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .cell {
   width: 10px;
   aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid;
+}
+
+.cell.alive {
+  background-color: black;
 }

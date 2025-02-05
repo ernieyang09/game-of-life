@@ -1,4 +1,6 @@
+import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
+import { cursorAtom } from "../atom/patternAtom";
 
 const CELL_SIZE = 10; // Each cell is 10x10 pixels
 const GRID_LINE_WIDTH = 1; // Thickness of grid lines
@@ -6,6 +8,7 @@ const GRID_COLOR = "#000"; // Grid line color
 
 const Board = ({ board, onCoordClick }) => {
   const canvasRef = useRef(null);
+  const shift = useAtomValue(cursorAtom);
 
   const drawGrid = (ctx, grid) => {
     const rows = grid.length;
@@ -16,7 +19,7 @@ const Board = ({ board, onCoordClick }) => {
     // Draw cells
     grid.forEach((row, r) => {
       row.forEach((cell, c) => {
-        ctx.fillStyle = cell ? "black" : "white"; // Alive = black, Dead = white
+        ctx.fillStyle = cell ? cell : "white"; // Alive = black, Dead = white
         ctx.fillRect(
           c * CELL_SIZE + GRID_LINE_WIDTH,
           r * CELL_SIZE + GRID_LINE_WIDTH,
@@ -59,7 +62,16 @@ const Board = ({ board, onCoordClick }) => {
     const row = Math.floor((event.clientX - rect.left) / CELL_SIZE);
     const col = Math.floor((event.clientY - rect.top) / CELL_SIZE);
 
-    onCoordClick({ x: col, y: row });
+    const data = shift
+      .map((coords) => [col + coords[0], row + coords[1]])
+      .map((coord) =>
+        coord[0] < 0 || coord[1] < 0 || coord[0] >= 50 || coord[1] >= 50
+          ? false
+          : coord
+      )
+      .filter(Boolean);
+
+    onCoordClick(data);
   };
 
   return (
