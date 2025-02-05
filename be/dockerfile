@@ -1,0 +1,32 @@
+# Use the official Node.js 20 image as the base image
+FROM node:20
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set up the global bin directory for pnpm
+ENV PNPM_HOME=/root/.local/share/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
+
+# Copy pnpm-lock.yaml and package.json (if it exists) first to install dependencies
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies using pnpm
+RUN pnpm install
+
+# Copy the rest of your application code
+COPY . .
+
+# Install PM2 globally
+RUN pnpm add -g pm2
+
+# Expose the port the app runs on
+EXPOSE 5123
+
+# Start the app using PM2 with the ecosystem.config.js file
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]
+

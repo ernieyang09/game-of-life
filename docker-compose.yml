@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  fe:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  be:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    ports:
+      - "5123:5123"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

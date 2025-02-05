@@ -5,12 +5,13 @@ import Pattern from "./components/Pattern";
 
 import patterns from "./patterns.json";
 
-const WS_URL = "ws://localhost:8080"; // Change to your backend WebSocket URL
-
 function App() {
-  const { sendMessage, lastMessage } = useWebSocket(WS_URL, {
-    shouldReconnect: () => true, // Auto-reconnect on disconnect
-  });
+  const { sendMessage, lastMessage } = useWebSocket(
+    import.meta.env.VITE_WS_URL,
+    {
+      shouldReconnect: () => true, // Auto-reconnect on disconnect
+    }
+  );
 
   // refactor
   const board = useMemo(() => {

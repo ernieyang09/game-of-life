@@ -1,9 +1,19 @@
 const WebSocket = require("ws");
 const { ConWay } = require("./service/conway");
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: 5123 });
 const { randomColor } = require("./lib/colors");
 
 const game = new ConWay();
+
+let interval;
+
+function resetInterval() {
+  clearInterval(interval);
+  interval = setInterval(() => {
+    game.nextGeneration();
+    broadcastGrid();
+  }, 1000);
+}
 
 const formatLives = () => {
   const arr = [];
@@ -28,7 +38,6 @@ wss.on("connection", (ws) => {
   // Let's assume 2 clients won't collide on the same color
   const color = randomColor();
 
-  let interval;
   console.log("Client connected");
 
   ws.send(
@@ -38,10 +47,7 @@ wss.on("connection", (ws) => {
   );
   ws.send(JSON.stringify(formatLives()));
 
-  interval = setInterval(() => {
-    game.nextGeneration();
-    broadcastGrid();
-  }, 1000);
+  resetInterval();
 
   ws.on("message", (message) => {
     try {
@@ -49,11 +55,13 @@ wss.on("connection", (ws) => {
 
       if (data.action === "clean") {
         game.reset();
+        resetInterval();
         broadcastGrid();
       }
 
       if (data.action === "update") {
         game.updateBoard(data.payload, color);
+        resetInterval();
         broadcastGrid();
       }
     } catch (e) {
@@ -68,4 +76,4 @@ wss.on("connection", (ws) => {
   });
 });
 
-console.log("WebSocket server is running on ws://localhost:8080");
+console.log("WebSocket server is running on ws://localhost:5123");
