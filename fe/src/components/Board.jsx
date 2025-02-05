@@ -4,7 +4,7 @@ const CELL_SIZE = 10; // Each cell is 10x10 pixels
 const GRID_LINE_WIDTH = 1; // Thickness of grid lines
 const GRID_COLOR = "#000"; // Grid line color
 
-const Board = ({ board }) => {
+const Board = ({ board, onCoordClick }) => {
   const canvasRef = useRef(null);
 
   const drawGrid = (ctx, grid) => {
@@ -56,12 +56,10 @@ const Board = ({ board }) => {
     if (!canvasRef.current) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = Math.floor((event.clientX - rect.left) / CELL_SIZE);
-    const y = Math.floor((event.clientY - rect.top) / CELL_SIZE);
+    const row = Math.floor((event.clientX - rect.left) / CELL_SIZE);
+    const col = Math.floor((event.clientY - rect.top) / CELL_SIZE);
 
-    console.log(x, y);
-
-    // toggleCell(x, y);
+    onCoordClick({ x: col, y: row });
   };
 
   return (
