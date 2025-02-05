@@ -31,8 +31,6 @@ wss.on("connection", (ws) => {
   let interval;
   console.log("Client connected");
 
-  // Send the initial grid to the client
-  console.log(JSON.stringify(formatLives()));
   ws.send(
     JSON.stringify({
       color,
@@ -40,11 +38,10 @@ wss.on("connection", (ws) => {
   );
   ws.send(JSON.stringify(formatLives()));
 
-  // Start the Game of Life loop
   interval = setInterval(() => {
     game.nextGeneration();
-    broadcastGrid(); // Send updated grid to all clients
-  }, 5000); // Update every second
+    broadcastGrid();
+  }, 1000);
 
   ws.on("message", (message) => {
     try {

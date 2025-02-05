@@ -1,3 +1,4 @@
+const { averageColor } = require("../lib/colors");
 const rows = 50;
 const cols = 50;
 
@@ -30,17 +31,15 @@ class ConWay {
     const newLives = {};
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const aliveNeighbors = this.countNeighbors(r, c);
+        const [aliveNeighbors, newColor] = this.traverseNeighbors(r, c);
         if (this.board[r][c] !== undefined) {
           newBoard[r][c] =
-            aliveNeighbors === 2 || aliveNeighbors === 3
-              ? this.board[r][c]
-              : undefined;
+            aliveNeighbors === 2 || aliveNeighbors === 3 ? newColor : undefined;
         } else {
-          newBoard[r][c] = aliveNeighbors === 3 ? "#000" : undefined;
+          newBoard[r][c] = aliveNeighbors === 3 ? newColor : undefined;
         }
         if (newBoard[r][c] !== undefined) {
-          newLives[`${r},${c}`] = newBoard[r][c];
+          newLives[`${r},${c}`] = newColor;
         }
       }
     }
@@ -48,8 +47,9 @@ class ConWay {
     this.lives = newLives;
   }
 
-  countNeighbors(row, col) {
-    let count = 0;
+  traverseNeighbors(row, col) {
+    let alive = 0;
+    const colors = [];
     const directions = [-1, 0, 1];
 
     for (let dr of directions) {
@@ -60,12 +60,15 @@ class ConWay {
 
         // Check within valid bounds
         if (r >= 0 && r < rows && c >= 0 && c < cols) {
-          count += this.board[r][c] ? 1 : 0; // Count only alive cells
+          alive += this.board[r][c] ? 1 : 0; // Count only alive cells
+          if (this.board[r][c]) {
+            colors.push(this.board[r][c]);
+          }
         }
       }
     }
 
-    return count;
+    return [alive, averageColor(colors)];
   }
 }
 
